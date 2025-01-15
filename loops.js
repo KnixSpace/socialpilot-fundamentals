@@ -27,7 +27,7 @@ for (let key in obj) {
   console.log(key);
 }
 
-//iterating over array elements
+//iterating over iterables
 console.log("\nfor...of");
 for (let key of ["Krupal", "Bobby", "Surya", "Aryan", "Aditya"]) {
   console.log(key);
