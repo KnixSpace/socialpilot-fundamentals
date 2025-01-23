@@ -255,21 +255,21 @@
 //   }, Promise.resolve([]));
 // }
 
-const apiUrls = [
-  "https://dummyjson.com/posts",
-  "https://dummyjson.com/products",
-  "https://dummyjson.com/users",
-];
+// const apiUrls = [
+//   "https://dummyjson.com/posts",
+//   "https://dummyjson.com/products",
+//   "https://dummyjson.com/users",
+// ];
 
-const callApi = (url, index, array) => {
-  // console.log(index);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`Calling API: ${url}`);
-      resolve(`Response from ${url}`);
-    }, 1000);
-  });
-};
+// const callApi = (url, index, array) => {
+//   // console.log(index);
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       console.log(`Calling API: ${url}`);
+//       resolve(`Response from ${url}`);
+//     }, 1000);
+//   });
+// };
 
 // apiUrls
 //   .reduce((promiseChain, apiUrl) => {
@@ -340,9 +340,68 @@ const callApi = (url, index, array) => {
 
 // console.log(null.a)
 
-const arr = [1, 2, 3, 4, 5];
+// const arr = [1, 2, 3, 4, 5];
 
-console.log(arr.splice(3,2,6,7,8,9));
-console.log(arr.slice());
+// console.log(arr.splice(3,2,6,7,8,9));
+// console.log(arr.slice());
 
-console.log(arr)
+// console.log(arr)
+
+// function fun(a, b) {
+//   return a + b;
+// }
+
+// console.log(fun(2, 3));
+
+// fun = function fun(a, b) {
+//   return a * b;
+// };
+
+// console.log(fun(2, 3));
+
+// fun = "Hello"
+
+// console.log(fun)
+
+// function fun() {
+//   console.log("this is new declaration");
+// }
+// fun()
+// console.log(fun);
+// console.log(fun());
+
+// function greet() {
+//   console.log("Hello");
+// }
+
+// greet();
+
+// var greet = "Greet";
+
+// console.log(greet());
+
+const person = {
+  name: "krupal",
+  age: 22,
+  arrow: () => {
+    console.log("Arrow", this);
+  },
+  declaration() {
+    console.log(this);
+  },
+};
+
+// person.arrow();
+// person.declaration();
+
+function fun(cal) {
+  cal();
+}
+
+fun(() => {
+  console.log(this);
+});
+
+fun(function () {
+  console.log("funs", this);
+});
