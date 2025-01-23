@@ -93,3 +93,66 @@ const funObject = {
 // funObject.nestedMethodObject();
 // funObject.nestedPropertyObject();
 // funObject.nestesdMedthodCall();
+
+const onlyObjectNested = {
+  l1: {
+    l2: {
+      l3: {
+        l4: {
+          l5: {
+            arrow: () => {
+              console.log("\nNested object arrow :", this);
+            },
+            method() {
+              console.log("\nNested object method :", this);
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+onlyObjectNested.l1.l2.l3.l4.l5.arrow();
+onlyObjectNested.l1.l2.l3.l4.l5.method();
+
+const objectNestedWithFunction = {
+  l1: {
+    l2: {
+      l3: {
+        l4: {
+          method() {
+            const nestedObj = {
+              arrow: () => {
+                console.log("\nNested method arrow :", this);
+              },
+              method() {
+                console.log("\nNested method method :", this);
+              },
+            };
+            nestedObj.arrow();
+            nestedObj.method();
+          },
+
+          checkNestedArrow() {
+            const na = {
+              na: () => {
+                console.log("\nna", this);
+                const nb = {
+                  nb: () => {
+                    console.log("\nnb", this);
+                  },
+                };
+                nb.nb();
+              },
+            };
+            na.na();
+          },
+        },
+      },
+    },
+  },
+};
+
+objectNestedWithFunction.l1.l2.l3.l4.method();
+objectNestedWithFunction.l1.l2.l3.l4.checkNestedArrow();
