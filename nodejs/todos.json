@@ -1,0 +1,18 @@
+[
+  {
+    "task": "Aditya",
+    "status": "pending"
+  },
+  {
+    "task": "Heyy this is now wth fetch api",
+    "status": "pending"
+  },
+  {
+    "task": "JWT token",
+    "status": "done"
+  },
+  {
+    "task": "Evening meeting",
+    "status": "done"
+  }
+]
