@@ -4,7 +4,7 @@ const {
   createTodo,
   getTodosList,
   deleteTodo,
-} = require("../controllers/todo.controller");
+} = require("../controllers/todo");
 const router = new Router({
   prefix: "/api/v1/todos",
 });

@@ -1,5 +1,5 @@
-const serverAliveRoutes = require("./server.status.routes");
-const todoRoutes = require("./todo.routes");
+const serverAliveRoutes = require("./server");
+const todoRoutes = require("./todo");
 
 module.exports = (app) => {
   app.use(serverAliveRoutes.routes());
