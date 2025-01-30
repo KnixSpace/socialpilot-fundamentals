@@ -11,6 +11,9 @@
   "description": "",
   "dependencies": {
     "@koa/router": "^13.1.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
     "mongodb": "^6.12.0",
