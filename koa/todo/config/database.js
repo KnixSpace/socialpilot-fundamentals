@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
-const connectionUrl = "mongodb://127.0.0.1:27017";
-const client = new MongoClient(connectionUrl);
+const connectionUri = process.env.MONGO_LOCAL_URI;
+const client = new MongoClient(connectionUri);
 
 const connectDB = async () => {
   console.log("Connecting MongoDb");
@@ -9,7 +9,6 @@ const connectDB = async () => {
     .connect()
     .then(() => {
       console.log("Connected to MongoDb");
-      
     })
     .catch((err) => {
       console.error("Failed to connect MongoDb\n", err);
