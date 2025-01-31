@@ -1,9 +1,7 @@
+const fs = require("fs");
 const { v4: uuidv4, parse: uuidParser } = require("uuid");
-const { client } = require("../config/database");
 const { status } = require("../constant");
-const { getTodo, deleteTodo } = require("../db/todo");
-
-const todosCollection = client.db("koa-todos").collection("todos");
+const { getTodo, deleteTodo, saveTodo } = require("../db/todo");
 
 const getAllTodos = async (ctx) => {
   try {
@@ -17,7 +15,7 @@ const getAllTodos = async (ctx) => {
     ctx.body = todos;
   } catch (error) {
     console.error("Error in fetching todo");
-    throw new Error("Erro in fetching todo");
+    throw new Error("Error in fetching todo");
   }
 };
 
@@ -32,7 +30,7 @@ const createTodo = async (ctx) => {
       createdOn: new Date(),
       updatedOn: new Date(),
     };
-    await todosCollection.insertOne(todo);
+    await saveTodo(todo);
     ctx.status = 201;
     ctx.body = todo;
   } catch (error) {
@@ -60,4 +58,29 @@ const removeTodo = async (ctx) => {
   }
 };
 
-module.exports = { createTodo, getAllTodos, removeTodo };
+const downloadTodo = async (ctx) => {
+  try {
+    const todos = await getTodo();
+    if (todos.length === 0) {
+      ctx.status = 204;
+      ctx.body = { message: "No todos found" };
+      return;
+    }
+
+    await fs.promises.writeFile(
+      `${ctx.request.user.userId.slice(0, 8)}.json`,
+      JSON.stringify(todos, null, 2),
+      "utf-8"
+    );
+
+    ctx.status = 200;
+    ctx.body = { message: "todo downloaded" };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: "error in downloading todo" };
+    console.error("Error in downloading todo");
+    throw new Error("Error in downloading todo");
+  }
+};
+
+module.exports = { createTodo, getAllTodos, removeTodo, downloadTodo };
