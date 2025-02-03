@@ -16,8 +16,8 @@ const registerUser = async (ctx) => {
     ctx.status = 201;
     ctx.body = { token };
   } catch (error) {
-    console.error("Error in registering", error);
-    throw new Error("Error in registering");
+    ctx.response.status = 500;
+    ctx.body = { message: "Error in registering user" };
   }
 };
 
