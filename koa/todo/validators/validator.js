@@ -1,16 +1,22 @@
+const buildPropertyError = (property, error) => ({
+  property,
+  error,
+});
+
 const validate = (validators) => {
-  const errors = [];
   return (ctx, next) => {
-    validators.forEach((item) => {
-      errors.push(item[0](ctx.request.body, item[1]));
+    const errors = [];
+    validators.forEach((validator) => {
+      validator(ctx, errors);
     });
+
     if (errors.length > 0) {
       ctx.status = 400;
       ctx.body = errors;
       return;
     }
-    next();
+    return next();
   };
 };
 
-module.exports = { validate };
+module.exports = { buildPropertyError, validate };
