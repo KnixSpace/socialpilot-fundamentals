@@ -5,26 +5,32 @@ const saveTodo = async (todo) => {
   try {
     await todosCollection.insertOne(todo);
   } catch (error) {
-    console.error("Error in saving todo");
     throw new Error("Erro in saving todo to db");
   }
 };
 
-const getTodo = async () => {
+const getTodo = async (userId) => {
   try {
-    return await todosCollection.find({}, { projection: { _id: 0 } }).toArray();
+    return await todosCollection
+      .find({ userId }, { projection: { _id: 0 } })
+      .toArray();
   } catch (error) {
     console.error("Error in fetching todo");
-    throw new Error("Erro in fetching todo to db");
+    throw new Error("Error in fetching todo to db");
   }
 };
 
-const deleteTodo = async (todoId) => {
+const deleteTodo = async (todoId, userId) => {
   try {
-    await todosCollection.deleteOne({ todoId });
+    const { deletedCount } = await todosCollection.deleteOne({
+      todoId,
+      userId,
+    });
+    if (!deletedCount) {
+      throw new Error("No match found");
+    }
   } catch (error) {
-    console.error("Error in deleting todo");
-    throw new Error("Erro in deleting todo to db");
+    throw new Error(error);
   }
 };
 

@@ -6,18 +6,20 @@ const {
   downloadTodo,
 } = require("../controllers");
 const { isAuthenticated } = require("../middleware/auth");
-const { isEmail } = require("../validators/miscellaneous");
 const { validate } = require("../validators/validator");
+const { title, description } = require("../validators/todo");
 const router = new Router({
   prefix: "/api/v1/todos",
 });
 
-router.get("/", getAllTodos);
-router.post("/create", isAuthenticated, createTodo);
+router.get("/", isAuthenticated, getAllTodos);
+router.post(
+  "/create",
+  isAuthenticated,
+  validate([title, description]),
+  createTodo
+);
 router.delete("/delete/:todoId", isAuthenticated, removeTodo);
 router.get("/download", isAuthenticated, downloadTodo);
-router.post("/validate", validate([[isEmail, "email"]]), (ctx) => {
-  ctx.body = "validating";
-});
 
 module.exports = router;
