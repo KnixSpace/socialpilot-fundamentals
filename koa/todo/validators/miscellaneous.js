@@ -1,4 +1,5 @@
 const { buildPropertyError } = require("./validator");
+const { validate: uuidValidate } = require("uuid");
 
 const isEmail = (email) =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
@@ -17,6 +18,8 @@ const isMin = (data, min) => data?.trim().length >= min;
 
 const isMax = (data, max) => data?.trim().length <= max;
 
+const isUuid = (param) => uuidValidate(param);
+
 module.exports = {
   buildPropertyError,
   isEmail,
@@ -25,4 +28,5 @@ module.exports = {
   isDefined,
   isMin,
   isMax,
+  isUuid,
 };

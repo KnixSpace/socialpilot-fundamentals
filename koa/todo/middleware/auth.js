@@ -24,7 +24,7 @@ const isAuthenticated = async (ctx, next) => {
   }
 
   ctx.request.user = user;
-  next();
+  return next();
 };
 
 module.exports = { isAuthenticated };
