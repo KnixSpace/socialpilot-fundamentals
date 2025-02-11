@@ -1,5 +1,5 @@
 const Router = require("@koa/router");
-const router = new Router();
+const router = new Router({ prefix: "/api/v1" });
 
 router.get("/", (ctx) => {
   ctx.body = "Infinix is alive";
