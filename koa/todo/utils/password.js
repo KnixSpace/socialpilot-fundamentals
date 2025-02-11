@@ -5,12 +5,7 @@ const generateHashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
 
-const verifyHashPassword = async (password, hashPassword) => {
-  const check = await bcrypt.compare(password, hashPassword);
-  if (check) {
-    return true;
-  }
-  return false;
-};
+const verifyHashPassword = async (password, hashPassword) =>
+  await bcrypt.compare(password, hashPassword);
 
 module.exports = { generateHashPassword, verifyHashPassword };

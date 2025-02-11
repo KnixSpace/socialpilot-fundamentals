@@ -1,52 +1,24 @@
 const { buildPropertyError } = require("./validator");
+const { validate: uuidValidate } = require("uuid");
 
-const isEmail = (email) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (typeof email === "string" && emailRegex.test(email.trim())) {
-    return true;
-  }
-  return false;
-};
+const isEmail = (email) =>
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
 
-const isPassword = (password, property, errors) => {
-  if (!isValidType(password, "string")) {
-    errors.push(buildPropertyError(property, "Must be an valid password"));
-    return;
-  } else if (password.trim().length < 8 || password.trim().length > 16) {
-    errors.push(
-      buildPropertyError(property, "Must be of 8 to 16 character long")
-    );
-    return;
-  }
-};
+const isPassword = (password) =>
+  password.trim().length > 8 &&
+  password.trim().length < 16 &&
+  /[A-Z]/.test(password) &&
+  /[0-9]/.test(password);
 
-const isValidType = (data, type) => {
-  if (typeof data === type) {
-    return true;
-  }
-  return false;
-};
+const isValidType = (data, type) => typeof data === type;
 
-const isDefined = (data) => {
-  if (data !== undefined) {
-    return true;
-  }
-  return false;
-};
+const isDefined = (data) => data !== undefined;
 
-const isMin = (data, min) => {
-  if (data?.trim().length >= min) {
-    return true;
-  }
-  return false;
-};
+const isMin = (data, min) => data?.trim().length >= min;
 
-const isMax = (data, max) => {
-  if (data?.trim().length <= max) {
-    return true;
-  }
-  return false;
-};
+const isMax = (data, max) => data?.trim().length <= max;
+
+const isUuid = (param) => uuidValidate(param);
 
 module.exports = {
   buildPropertyError,
@@ -56,4 +28,5 @@ module.exports = {
   isDefined,
   isMin,
   isMax,
+  isUuid,
 };

@@ -1,6 +1,9 @@
 const { MongoClient } = require("mongodb");
 
-const connectionUri = process.env.MONGO_LOCAL_URI;
+const connectionUri =
+  process.env.NODE_ENV === "development"
+    ? process.env.MONGO_LOCAL_URI
+    : process.env.MONGO_ATLAS_URI;
 const client = new MongoClient(connectionUri);
 
 const connectDB = async () => {
