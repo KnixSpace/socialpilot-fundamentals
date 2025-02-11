@@ -1,23 +1,11 @@
 const { client } = require("../config/database");
 const userCollection = client.db("koa-todos").collection("users");
 
-const saveUser = async (user) => {
-  try {
-    await userCollection.insertOne(user);
-    return user;
-  } catch (error) {
-    console.error("Error in saving user", error);
-    throw new Error("Erro in saving user to db");
-  }
-};
+const saveUser = async (user) => await userCollection.insertOne(user);
 
-const getUser = async (email) => {
-  try {
-    return await userCollection.findOne({ email });
-  } catch (error) {
-    console.error("Error in retriving user", error);
-    throw new Error("Error in retriving user");
-  }
-};
+const isUser = async (filter) => await userCollection.countDocuments(filter);
 
-module.exports = { saveUser, getUser };
+const getUser = async (filter, options) =>
+  await userCollection.findOne(filter, options);
+
+module.exports = { saveUser, getUser, isUser };
