@@ -1,7 +1,7 @@
 const { v4: uuidV4 } = require("uuid");
 const { saveUser, getUser } = require("../db/user");
 const { hashPassword } = require("../utils/password");
-const { role: ROLE } = require("../constants/constant");
+const { ROLE } = require("../constants/constant");
 const { generateJwtToken } = require("../utils/jwt");
 const { sendMail } = require("../utils/email");
 const { adminApprovalHtml } = require("../constants/html");
@@ -46,12 +46,6 @@ const login = async (ctx) => {
     { email },
     { projection: { _id: 0, userId: 1, email: 1, role: 1, approvedByAdmin: 1 } }
   );
-
-  if (user.role === ROLE.broker && !user.approvedByAdmin) {
-    ctx.status = 403;
-    ctx.body = { message: "pending admin approval" };
-    return;
-  }
 
   const token = generateJwtToken({
     userId: user.userId,

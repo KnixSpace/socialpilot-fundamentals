@@ -1,5 +1,4 @@
-const { isUser, getUser } = require("../db/user");
-const { validatePassword } = require("../utils/password");
+const { isUser } = require("../db/user");
 const {
   isDefined,
   isValidEmail,
@@ -9,90 +8,81 @@ const {
 } = require("./common");
 const { buildPropertyError } = require("./validate");
 
-const name = (ctx, errors) => {
+const validateRegisterName = (ctx, errors) => {
   const { name } = ctx.request.body;
 
-  if (!isDefined(name)) {
-    errors.push(buildPropertyError("name", "name is required"));
-    return;
-  } else if (!isValidType(name, "string")) {
-    errors.push(buildPropertyError("name", "not a valid string"));
-    return;
-  } else if (!isInRange(name, "BOTH", 1, 25)) {
-    errors.push(
+  if (!isDefined(name))
+    return errors.push(buildPropertyError("name", "name is required"));
+  else if (!isValidType(name, "string"))
+    return errors.push(
+      buildPropertyError("name", "name must be a valid string")
+    );
+  else if (!isInRange(name, "BOTH", 1, 25))
+    return errors.push(
       buildPropertyError(
         "name",
         "name must be of minimum 1 and maximum 25 character"
       )
     );
-    return;
-  }
 };
 
-const email = async (ctx, errors) => {
+const validateRegisterEmail = async (ctx, errors) => {
   const { email } = ctx.request.body;
-  const url = ctx.url;
 
-  if (!isDefined(email)) {
-    errors.push(buildPropertyError("email", "email is required"));
-    return;
-  } else if (!isValidEmail(email)) {
-    errors.push(buildPropertyError("email", "not a valid email"));
-    return;
-  }
-
-  if (url === "/api/v1/auth/register") {
-    if (await isUser({ email })) {
-      errors.push(buildPropertyError("email", "email already existes"));
-      return;
-    }
-  }
+  if (!isDefined(email))
+    return errors.push(buildPropertyError("email", "email is required"));
+  else if (!isValidType(email, "string"))
+    return errors.push(
+      buildPropertyError("email", "email must be valid string")
+    );
+  else if (!isValidEmail(email))
+    return errors.push(buildPropertyError("email", "not a valid email"));
+  else if (await isUser({ email }))
+    return errors.push(buildPropertyError("email", "email already existes"));
 };
 
-const isValidCredential = async (email, password) => {
-  if (!isDefined(email)) {
-    return false;
-  }
+const validateRegisterPassword = (ctx, errors) => {
+  const { password } = ctx.request.body;
 
-  if (!(await isUser({ email }))) {
-    return false;
-  }
-
-  const { password: hashPassword } = await getUser(
-    { email },
-    { projection: { _id: 0, password: 1 } }
-  );
-  if (!(await validatePassword(password, hashPassword))) {
-    return false;
-  }
-
-  return true;
+  if (!isDefined(password))
+    return errors.push(buildPropertyError("password", "password is required"));
+  else if (!isValidType(password, "string"))
+    return errors.push(
+      buildPropertyError("password", "password must be valid string")
+    );
+  else if (!isValidPassword(password))
+    return errors.push(buildPropertyError("password", "not a valid password"));
 };
 
-const password = async (ctx, errors) => {
-  const { email, password } = ctx.request.body;
-  const url = ctx.url;
+const validateLoginEmail = (ctx, errors) => {
+  const { email } = ctx.request.body;
 
-  if (!isDefined(password)) {
-    errors.push(buildPropertyError("password", "password is required"));
-    return;
-  } else if (url === "/api/v1/auth/register") {
-    if (!isValidPassword(password)) {
-      errors.push(buildPropertyError("password", "not a valid password"));
-      return;
-    }
-  } else if (url === "/api/v1/auth/login") {
-    if (!(await isValidCredential(email, password))) {
-      errors.push(
-        buildPropertyError(
-          "invalid credentials",
-          "password or email is not valid"
-        )
-      );
-      return;
-    }
-  }
+  if (!isDefined(email))
+    return errors.push(buildPropertyError("email", "email is required"));
+  else if (!isValidType(email, "string"))
+    return errors.push(
+      buildPropertyError("email", "email must be valid string")
+    );
+  else if (!isValidEmail(email))
+    return errors.push(buildPropertyError("email", "email is not valid"));
 };
 
-module.exports = { name, email, password };
+const validateLoginPassword = (ctx, errors) => {
+  const { password } = ctx.request.body;
+
+  if (!isDefined(password))
+    return errors.push(buildPropertyError("password", "password is required"));
+  else if (!isValidType(password, "string"))
+    return errors.push(
+      buildPropertyError("password", "password must be valid string")
+    );
+};
+
+module.exports = {
+  validateRegisterName,
+  validateRegisterEmail,
+  validateRegisterPassword,
+  validateLoginEmail,
+  validateLoginPassword,
+};
 1;
