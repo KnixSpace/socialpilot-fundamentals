@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Broker Approval Request
+  body
+    p Hello Krupal,
+    p A new broker #{name} needs your approval.
+    a(href=`http://localhost:3000/api/v1/admin/approve-broker/${brokerDataToken}` target="_blank" style="text-decoration:none;background:#101415;color:white;padding:8px 18px;margin:auto;border-radius:4px;display:inline-block;") Approve #{name}
+    br
+    p Regards,
+    p Koa Property team
