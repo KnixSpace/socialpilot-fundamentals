@@ -3,8 +3,9 @@ const { saveUser, getUser } = require("../db/user");
 const { hashPassword } = require("../utils/password");
 const { ROLE } = require("../constants/constant");
 const { generateJwtToken } = require("../utils/jwt");
-const { sendMail } = require("../utils/email");
-const { adminApprovalHtml } = require("../constants/html");
+const { sendAdminApprovalRequest } = require("../utils/email");
+
+const PRIVATE_KEY = process.env.JWT_PASSWORD_KEY;
 
 const register = async (ctx) => {
   const { role, name, email, password } = ctx.request.body;
@@ -22,19 +23,18 @@ const register = async (ctx) => {
   await saveUser(user);
 
   if (role === ROLE.broker) {
-    sendMail(
-      email,
-      "Sent for admin approval",
-      `Hello ${name}`,
-      adminApprovalHtml(name)
-    );
-    return (ctx.body = { message: "sent for admin approval" });
+    await sendAdminApprovalRequest(email, name, user.userId);
+    ctx.body = { message: "sent for admin approval" };
+    return;
   }
 
-  const token = generateJwtToken({
-    userId: user.userId,
-    email: user.email,
-  });
+  const token = generateJwtToken(
+    {
+      userId: user.userId,
+      email: user.email,
+    },
+    PRIVATE_KEY
+  );
 
   ctx.set("Authorization", `Bearer ${token}`);
   ctx.body = { message: "register successfully" };
@@ -47,10 +47,13 @@ const login = async (ctx) => {
     { projection: { _id: 0, userId: 1, email: 1, role: 1, approvedByAdmin: 1 } }
   );
 
-  const token = generateJwtToken({
-    userId: user.userId,
-    email: user.email,
-  });
+  const token = generateJwtToken(
+    {
+      userId: user.userId,
+      email: user.email,
+    },
+    PRIVATE_KEY
+  );
 
   ctx.status = 201;
   ctx.set("Authorization", `Bearer ${token}`);
