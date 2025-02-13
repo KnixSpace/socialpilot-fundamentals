@@ -8,4 +8,9 @@ const saveUser = async (userData) => await userCollection.insertOne(userData);
 const getUser = async (filters, options) =>
   await userCollection.findOne(filters, options);
 
-module.exports = { isUser, saveUser, getUser };
+const updateUser = async (filters, data) => {
+  data.updatedOn = new Date();
+  return await userCollection.updateOne(filters, { $set: data });
+};
+
+module.exports = { isUser, saveUser, getUser, updateUser };

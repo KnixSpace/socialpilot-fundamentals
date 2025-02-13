@@ -3,9 +3,11 @@ const { isUser, getUser } = require("../db/user");
 const { verifyJwtToken } = require("../utils/jwt");
 const { validatePassword } = require("../utils/password");
 
+const PRIVATE_KEY = process.env.JWT_PASSWORD_KEY;
+
 const isAuthenticated = async (ctx, next) => {
-  const token = ctx.headers.authorization.split(" ")[1];
-  const user = verifyJwtToken(token);
+  const token = ctx.headers?.authorization?.split(" ")[1];
+  const user = verifyJwtToken(token, PRIVATE_KEY);
   if (!user) {
     ctx.status = 401;
     ctx.body = { message: "unauthorized" };
@@ -55,4 +57,18 @@ const isValidCredentials = async (ctx, next) => {
   return next();
 };
 
-module.exports = { isAuthenticated, isValidCredentials };
+const isAdmin = async (ctx, next) => {
+  const { userId } = ctx.request.user;
+  const user = await getUser(
+    { userId },
+    { projection: { _id: 0, email: 1, role: 1 } }
+  );
+  if (user.role !== ROLE.admin) {
+    ctx.status = 401;
+    ctx.body = { message: "you are not admin" };
+    return;
+  }
+  return next();
+};
+
+module.exports = { isAuthenticated, isValidCredentials, isAdmin };

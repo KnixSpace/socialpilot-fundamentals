@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const path = require("path");
+const pug = require("pug");
+const { generateJwtToken } = require("./jwt");
 
 const FROM = process.env.FROM;
 const APP_PASS = process.env.APP_PASS;
@@ -11,13 +14,40 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async (to, subject, text, html = null) =>
+const renderTemplate = (templateName, data) => {
+  const filePath = path.join(
+    __dirname,
+    "../views/emails",
+    `${templateName}.pug`
+  );
+  return pug.renderFile(filePath, data);
+};
+
+const sendEmail = async (to, subject, template, data) =>
   await transporter.sendMail({
     from: FROM,
     to,
     subject,
-    text,
-    html,
+    html: renderTemplate(template, data),
   });
 
-module.exports = { sendMail };
+const sendAdminApprovalRequest = async (to, name, userId) =>
+  await sendEmail(to, "Sent for admin approval", "brokerApprovalRequest", {
+    name,
+  }).then(() => {
+    const brokerDataToken = generateJwtToken(
+      { userId, email: to, name },
+      process.env.JWT_DATA_KEY
+    );
+
+    sendEmail(FROM, "New broker approval request", "adminApprovalRequest", {
+      name,
+      brokerDataToken,
+    });
+  });
+
+const sendApprovalConfirmation = async (to, name) => {
+  await sendEmail(to, "Request approved", "brokerApproved", { name });
+};
+
+module.exports = { sendAdminApprovalRequest, sendApprovalConfirmation };
