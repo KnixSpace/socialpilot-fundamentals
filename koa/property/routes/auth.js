@@ -1,4 +1,6 @@
 const Router = require("@koa/router");
+const router = new Router({ prefix: "/api/v1/auth" });
+
 const { register, login } = require("../controllers/auth");
 const { validate } = require("../validators/validate");
 const {
@@ -9,7 +11,7 @@ const {
   validateRegisterPassword,
 } = require("../validators/auth");
 const { isValidCredentials } = require("../middlewares/auth");
-const router = new Router({ prefix: "/api/v1/auth" });
+
 
 router.post(
   "/register",
