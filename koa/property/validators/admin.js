@@ -1,7 +1,7 @@
 const { validate: uuidValidate } = require("uuid");
 
 const { buildPropertyError } = require("./validate");
-const { isUser, getUser } = require("../db/user");
+const { readUser } = require("../db/user");
 const { isDefined, isValidType, isValidEmail, isInRange } = require("./common");
 const { verifyJwtToken } = require("../utils/jwt");
 
@@ -36,10 +36,14 @@ const validateBroker = async (ctx, errors) => {
   const brokerData = ctx.request.state;
   if (!brokerData) return;
 
-  const { email, userId } = brokerData;
-  if (!(await isUser({ userId, email, role: "B" })))
+  const broker = await readUser(
+    { userId: brokerData.userId },
+    { projection: { _id: 0, password: 0, createdOn: 0, updatedOn: 0 } }
+  );
+
+  if (!broker)
     return errors.push(buildPropertyError("invalid", "not a valid broker"));
-  else if (!(await getUser({ userId, approvedByAdmin: false })))
+  else if (broker.approvedByAdmin)
     return errors.push(
       buildPropertyError("invalid", "broker is already approved")
     );

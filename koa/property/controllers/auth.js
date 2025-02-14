@@ -1,5 +1,5 @@
 const { v4: uuidV4 } = require("uuid");
-const { saveUser, getUser } = require("../db/user");
+const { createUser, readUser } = require("../db/user");
 const { hashPassword } = require("../utils/password");
 const { ROLE } = require("../constants/constant");
 const { generateJwtToken } = require("../utils/jwt");
@@ -20,7 +20,7 @@ const register = async (ctx) => {
     createdOn: new Date(),
     updatedOn: new Date(),
   };
-  await saveUser(user);
+  await createUser(user);
 
   if (role === ROLE.broker) {
     await sendAdminApprovalRequest(email, name, user.userId);
@@ -41,12 +41,7 @@ const register = async (ctx) => {
 };
 
 const login = async (ctx) => {
-  const { email } = ctx.request.body;
-  const user = await getUser(
-    { email },
-    { projection: { _id: 0, userId: 1, email: 1, role: 1, approvedByAdmin: 1 } }
-  );
-
+  const user = ctx.request.user;
   const token = generateJwtToken(
     {
       userId: user.userId,

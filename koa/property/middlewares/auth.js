@@ -1,5 +1,5 @@
 const { ROLE } = require("../constants/constant");
-const { isUser, getUser } = require("../db/user");
+const { readUser } = require("../db/user");
 const { verifyJwtToken } = require("../utils/jwt");
 const { validatePassword } = require("../utils/password");
 
@@ -14,60 +14,59 @@ const isAuthenticated = async (ctx, next) => {
     return;
   }
 
-  const validUser = await isUser({ userId: user.userId });
-  if (!validUser) {
+  const userData = await readUser(
+    { userId: user.userId },
+    { projection: { password: 0, _id: 0, createdOn: 0, updatedOn: 0 } }
+  );
+
+  if (!userData) {
     ctx.status = 401;
     ctx.body = { message: "unauthorized" };
     return;
   }
 
-  ctx.request.user = user;
+  ctx.request.user = userData;
+  return next();
+};
+
+const isAdmin = async (ctx, next) => {
+  const { role } = ctx.request.user;
+  if (role !== ROLE.admin) {
+    ctx.status = 401;
+    ctx.body = { message: "you are not admin" };
+    return;
+  }
   return next();
 };
 
 const isValidCredentials = async (ctx, next) => {
   const { email, password } = ctx.request.body;
-  if (!(await isUser({ email }))) {
-    ctx.status = 401;
-    ctx.body = { message: "email or password is not valid" };
-    return;
-  }
-
-  const {
-    role,
-    approvedByAdmin,
-    password: hashPassword,
-  } = await getUser(
+  const user = await readUser(
     { email },
-    { projection: { _id: 0, password: 1, role: 1, approvedByAdmin: 1 } }
+    { projection: { _id: 0, createdOn: 0, updatedOn: 0 } }
   );
 
-  if (!(await validatePassword(password, hashPassword))) {
+  if (!user) {
     ctx.status = 401;
     ctx.body = { message: "email or password is not valid" };
     return;
   }
 
-  if (role === ROLE.broker && !approvedByAdmin) {
+  if (!(await validatePassword(password, user.password))) {
+    ctx.status = 401;
+    ctx.body = { message: "email or password is not valid" };
+    return;
+  }
+
+  if (user.role === ROLE.broker && !user.approvedByAdmin) {
     ctx.status = 403;
     ctx.body = { message: "pending admin approval" };
     return;
   }
 
-  return next();
-};
+  delete user.password;
 
-const isAdmin = async (ctx, next) => {
-  const { userId } = ctx.request.user;
-  const user = await getUser(
-    { userId },
-    { projection: { _id: 0, email: 1, role: 1 } }
-  );
-  if (user.role !== ROLE.admin) {
-    ctx.status = 401;
-    ctx.body = { message: "you are not admin" };
-    return;
-  }
+  ctx.request.user = user;
   return next();
 };
 
