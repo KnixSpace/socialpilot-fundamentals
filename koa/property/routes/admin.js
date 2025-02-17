@@ -8,7 +8,6 @@ const router = new Router({ prefix: "/api/v1/admin" });
 router.post(
   "/approve-broker/:brokerDataToken",
   isAuthenticated,
-  isAdmin,
   validate([validateParams, validateBroker]),
   approveBroker
 );
