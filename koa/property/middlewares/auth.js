@@ -1,4 +1,4 @@
-const { ROLE } = require("../constants/constant");
+const { userRole } = require("../constants/constant");
 const { readUser } = require("../db/user");
 const { verifyJwtToken } = require("../utils/jwt");
 const { validatePassword } = require("../utils/password");
@@ -31,7 +31,7 @@ const isAuthenticated = async (ctx, next) => {
 
 const isAdmin = async (ctx, next) => {
   const { role } = ctx.request.user;
-  if (role !== ROLE.admin) {
+  if (role !== userRole.admin) {
     ctx.status = 401;
     ctx.body = { message: "you are not admin" };
     return;
@@ -58,7 +58,7 @@ const isValidCredentials = async (ctx, next) => {
     return;
   }
 
-  if (user.role === ROLE.broker && !user.approvedByAdmin) {
+  if (user.role === userRole.broker && !user.approvedByAdmin) {
     ctx.status = 403;
     ctx.body = { message: "pending admin approval" };
     return;

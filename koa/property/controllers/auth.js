@@ -1,7 +1,7 @@
 const { v4: uuidV4 } = require("uuid");
 const { createUser, readUser } = require("../db/user");
 const { hashPassword } = require("../utils/password");
-const { ROLE } = require("../constants/constant");
+const { userRole } = require("../constants/constant");
 const { generateJwtToken } = require("../utils/jwt");
 const { sendAdminApprovalRequest } = require("../utils/email");
 
@@ -22,7 +22,7 @@ const register = async (ctx) => {
   };
   await createUser(user);
 
-  if (role === ROLE.broker) {
+  if (role === userRole.broker) {
     await sendAdminApprovalRequest(email, name, user.userId);
     ctx.body = { message: "sent for admin approval" };
     return;
