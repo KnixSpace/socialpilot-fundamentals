@@ -1,14 +1,34 @@
 const { userRole } = require("../constants/constant");
+const { allowedRoutes } = require("../constants/permission");
 const { readUser } = require("../db/user");
 const { verifyJwtToken } = require("../utils/jwt");
 const { validatePassword } = require("../utils/password");
 
 const PRIVATE_KEY = process.env.JWT_PASSWORD_KEY;
 
+const isAllowedRoute = async (url, role) => {
+  const permissions = Object.entries(allowedRoutes)
+    .filter((permission) => url.includes(permission[0]))
+    .flat();
+
+  if (permissions.length) {
+    if (permissions[1].includes(role)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const isAuthenticated = async (ctx, next) => {
   const token = ctx.headers?.authorization?.split(" ")[1];
   const user = verifyJwtToken(token, PRIVATE_KEY);
   if (!user) {
+    ctx.status = 401;
+    ctx.body = { message: "unauthorized" };
+    return;
+  }
+
+  if (!isAllowedRoute(ctx.url, user.role)) {
     ctx.status = 401;
     ctx.body = { message: "unauthorized" };
     return;
@@ -26,16 +46,6 @@ const isAuthenticated = async (ctx, next) => {
   }
 
   ctx.request.user = userData;
-  return next();
-};
-
-const isAdmin = async (ctx, next) => {
-  const { role } = ctx.request.user;
-  if (role !== userRole.admin) {
-    ctx.status = 401;
-    ctx.body = { message: "you are not admin" };
-    return;
-  }
   return next();
 };
 
@@ -70,4 +80,4 @@ const isValidCredentials = async (ctx, next) => {
   return next();
 };
 
-module.exports = { isAuthenticated, isValidCredentials, isAdmin };
+module.exports = { isAuthenticated, isValidCredentials };

@@ -31,7 +31,7 @@ const register = async (ctx) => {
   const token = generateJwtToken(
     {
       userId: user.userId,
-      email: user.email,
+      role: user.role,
     },
     PRIVATE_KEY
   );
@@ -45,7 +45,7 @@ const login = async (ctx) => {
   const token = generateJwtToken(
     {
       userId: user.userId,
-      email: user.email,
+      role: user.role,
     },
     PRIVATE_KEY
   );
