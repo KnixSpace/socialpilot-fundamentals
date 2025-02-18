@@ -32,6 +32,7 @@ const register = async (ctx) => {
     {
       userId: user.userId,
       role: user.role,
+      email: user.email,
     },
     PRIVATE_KEY
   );
@@ -46,6 +47,7 @@ const login = async (ctx) => {
     {
       userId: user.userId,
       role: user.role,
+      email: user.email,
     },
     PRIVATE_KEY
   );

@@ -6,7 +6,7 @@ const { validatePassword } = require("../utils/password");
 
 const PRIVATE_KEY = process.env.JWT_PASSWORD_KEY;
 
-const isAllowedRoute = async (url, role) => {
+const isAllowedRoute = (url, role) => {
   const permissions = Object.entries(allowedRoutes)
     .filter((permission) => url.includes(permission[0]))
     .flat();
@@ -14,9 +14,11 @@ const isAllowedRoute = async (url, role) => {
   if (permissions.length) {
     if (permissions[1].includes(role)) {
       return true;
+    } else {
+      return false;
     }
   }
-  return false;
+  return true;
 };
 
 const isAuthenticated = async (ctx, next) => {

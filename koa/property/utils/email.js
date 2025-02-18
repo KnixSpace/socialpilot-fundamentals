@@ -31,23 +31,29 @@ const sendEmail = async (to, subject, template, data) =>
     html: renderTemplate(template, data),
   });
 
-const sendAdminApprovalRequest = async (to, name, userId) =>
+const sendAdminApprovalRequest = async (to, name, userId) => {
   await sendEmail(to, "Sent for admin approval", "brokerApprovalRequest", {
     name,
-  }).then(() => {
-    const brokerDataToken = generateJwtToken(
-      { userId, email: to, name },
-      process.env.JWT_DATA_KEY
-    );
-
-    sendEmail(FROM, "New broker approval request", "adminApprovalRequest", {
-      name,
-      brokerDataToken,
-    });
   });
+
+  const brokerDataToken = generateJwtToken(
+    { userId, email: to, name },
+    process.env.JWT_DATA_KEY
+  );
+
+  await sendEmail(FROM, "New broker approval request", "adminApprovalRequest", {
+    name,
+    brokerDataToken,
+  });
+};
 
 const sendApprovalConfirmation = async (to, name) => {
   await sendEmail(to, "Request approved", "brokerApproved", { name });
 };
 
-module.exports = { sendAdminApprovalRequest, sendApprovalConfirmation };
+module.exports = {
+  sendAdminApprovalRequest,
+  sendApprovalConfirmation,
+  sendNewPropertyInterest,
+  sendPropertyInterestupdate,
+};
