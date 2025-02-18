@@ -9,9 +9,12 @@ const {
 const { propertyStatus } = require("../constants/constant");
 
 const addNewProperty = async (ctx) => {
+  const { userId, role } = ctx.request.user;
   const property = Object.assign(
     {
       propertyId: uuidV4(),
+      ownedById: userId,
+      ownedByType: role,
       status: propertyStatus.avaliable,
       createdOn: new Date(),
       updatedOn: new Date(),
