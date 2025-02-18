@@ -51,6 +51,17 @@ const sendApprovalConfirmation = async (to, name) => {
   await sendEmail(to, "Request approved", "brokerApproved", { name });
 };
 
+const sendNewPropertyInterest = async (to, data) =>
+  await sendEmail(to, "New property interest", "propertyInterestRequest", data);
+
+const sendPropertyInterestupdate = async (to, data) =>
+  await sendEmail(
+    to,
+    "Property Interest Status Update",
+    "propertyInterestStatusUpdate",
+    data
+  );
+
 module.exports = {
   sendAdminApprovalRequest,
   sendApprovalConfirmation,
